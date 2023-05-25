@@ -1,0 +1,2321 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Manufacture API",
+    "description": "Binar Academy Challenge Chapter-5, make api documentation for manufacture api that contain CRUD and security.",
+    "contact": {
+      "email": "admin@email.com",
+      "name": "Me Through Email"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://manufacture-app-development.up.railway.app/api/v1",
+      "description": "Development Server"
+    },
+    {
+      "url": "https://manufacture-app-production.up.railway.app/api/v1",
+      "description": "Production Server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Auth"
+    },
+    {
+      "name": "Components"
+    },
+    {
+      "name": "Suppliers"
+    },
+    {
+      "name": "Products"
+    },
+    {
+      "name": "Component_Suppliers"
+    },
+    {
+      "name": "Product_Components"
+    }
+  ],
+  "paths": {
+    "/register": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Register New User",
+        "description": "register new user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name",
+                  "email",
+                  "password"
+                ]
+              },
+              "example": {
+                "username": "sabrina",
+                "email": "sabrina@email.com",
+                "password": "password"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "username": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "status": true,
+                  "message": "success create new user",
+                  "data": {
+                    "id": 1,
+                    "username": "sabrina",
+                    "email": "sabrina@email.com"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "ErrMissingRequestBody": {
+                    "$ref": "#/components/examples/MissingRequestBody"
+                  },
+                  "ErrEmailAlreadyUsed": {
+                    "value": {
+                      "status": false,
+                      "message": "email already been used",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Login Existing User",
+        "description": "login existing user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "email",
+                  "password"
+                ]
+              },
+              "example": {
+                "email": "sabrina@email.com",
+                "password": "password"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "success login",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "status": true,
+                  "message": "success login",
+                  "data": "<JWT_Token>"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "ErrorMissingRequestBody": {
+                    "$ref": "#/components/examples/MissingRequestBody"
+                  },
+                  "ErrorInvalidEmailPassword": {
+                    "value": {
+                      "status": false,
+                      "message": "email or password is incorrect"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/components": {
+      "get": {
+        "tags": [
+          "Components"
+        ],
+        "summary": "List All Component",
+        "description": "list all component",
+        "responses": {
+          "200": {
+            "description": "success get all component",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "success get all component"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "number"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          }
+                        },
+                        "example": [
+                          {
+                            "id": 1,
+                            "name": "ban",
+                            "description": "tahan lama"
+                          },
+                          {
+                            "id": 2,
+                            "name": "stang",
+                            "description": "terbaik"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Components"
+        ],
+        "summary": "Create New Component",
+        "description": "create new component",
+        "security": [
+          {
+            "JWT_Token": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "supplier_id": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "required": [
+                  "name",
+                  "description"
+                ]
+              },
+              "examples": {
+                "sunroof": {
+                  "summary": "an example without supplier id",
+                  "value": {
+                    "name": "sunroof",
+                    "description": "tilt 80%"
+                  }
+                },
+                "spoiler": {
+                  "summary": "an example with supplier id",
+                  "value": {
+                    "name": "spoiler",
+                    "description": "poly carbonate",
+                    "supplier_id": [
+                      1,
+                      2,
+                      3
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "success create new component",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Component"
+                    }
+                  }
+                },
+                "examples": {
+                  "sunroof": {
+                    "summary": "an example without supplier id",
+                    "value": {
+                      "status": true,
+                      "message": "success create new component",
+                      "data": {
+                        "id": 1,
+                        "name": "sunroof",
+                        "description": "tilt 80%"
+                      }
+                    }
+                  },
+                  "spoiler": {
+                    "summary": "an example with supplier id",
+                    "value": {
+                      "status": true,
+                      "message": "success create new component and create new record in table component_suppliers",
+                      "data": {
+                        "id": 2,
+                        "name": "spoiler",
+                        "description": "poly carbonate",
+                        "supplier_id": [
+                          1,
+                          2,
+                          3
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "MissingRequestBody": {
+                    "$ref": "#/components/examples/MissingRequestBody"
+                  },
+                  "SupplierIdMustArray": {
+                    "value": {
+                      "status": false,
+                      "message": "Supplier id must be an array",
+                      "data": null
+                    }
+                  },
+                  "SupplierIdNotfound": {
+                    "value": {
+                      "status": false,
+                      "message": "there's supplier id not found",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Components"
+        ],
+        "summary": "Delete Component",
+        "description": "Delete Component by id",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "component_id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "security": [
+          {
+            "JWT_Token": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success delete component",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                },
+                "example": {
+                  "status": true,
+                  "message": "success delete component",
+                  "data": null
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "bad requesst",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "ErrMissingQueryParameter": {
+                    "$ref": "#/components/examples/MissingQuery"
+                  },
+                  "ErrComponentNotFound": {
+                    "$ref": "#/components/examples/ComponentNotFound"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/components/{id}": {
+      "get": {
+        "tags": [
+          "Components"
+        ],
+        "summary": "Get Detail of a Component",
+        "description": "get detail of a component",
+        "parameters": [
+          {
+            "name": "id",
+            "description": "component ID",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/ComponentDetail"
+                    }
+                  }
+                },
+                "example": {
+                  "status": true,
+                  "message": "success get detail component",
+                  "data": {
+                    "id": 1,
+                    "name": "ban",
+                    "description": "ban terkuat se Indonesia",
+                    "suppliers": [
+                      {
+                        "id": 1,
+                        "name": "PT. DUNLOP INDONESIA",
+                        "address": "Jakarta"
+                      },
+                      {
+                        "id": 4,
+                        "name": "PT. Michelin Indonesia",
+                        "address": "Aceh"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "MissingParameter": {
+                    "$ref": "#/components/examples/MissingParameter"
+                  },
+                  "ComponentNotFound": {
+                    "$ref": "#/components/examples/ComponentNotFound"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Components"
+        ],
+        "summary": "Modified Existing Component",
+        "description": "modified existing Component",
+        "parameters": [
+          {
+            "name": "id",
+            "description": "component ID",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "security": [
+          {
+            "JWT_Token": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "minProperties": 1,
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  }
+                }
+              },
+              "examples": {
+                "modifyName": {
+                  "value": {
+                    "name": "ban"
+                  }
+                },
+                "modifyDescription": {
+                  "value": {
+                    "description": "good quality"
+                  }
+                },
+                "modifyBoth": {
+                  "value": {
+                    "name": "ban",
+                    "description": "good quality"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "success update user data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                },
+                "example": {
+                  "status": true,
+                  "message": "success update component",
+                  "data": null
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "ErrMissingParameter": {
+                    "$ref": "#/components/examples/MissingParameter"
+                  },
+                  "ErrMissingBodyRequest": {
+                    "$ref": "#/components/examples/MissingRequestBody"
+                  },
+                  "ErrComponentNotFound": {
+                    "$ref": "#/components/examples/ComponentNotFound"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/suppliers": {
+      "get": {
+        "tags": [
+          "Suppliers"
+        ],
+        "summary": "Get All Supplier",
+        "description": "get all supplier",
+        "responses": {
+          "200": {
+            "description": "success get all supplier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Supplier"
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "status": true,
+                  "message": "success get all supplier",
+                  "data": [
+                    {
+                      "id": 1,
+                      "name": "PT. DUNLOP INDONESIA",
+                      "address": "Jakarta"
+                    },
+                    {
+                      "id": 2,
+                      "name": "PT. Cahaya Indah",
+                      "address": "Bandung"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Suppliers"
+        ],
+        "summary": "Create New Supplier",
+        "description": "create new supplier",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "address": {
+                    "type": "string"
+                  },
+                  "component_id": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "required": [
+                  "name",
+                  "address"
+                ]
+              },
+              "examples": {
+                "WithoutComponentID": {
+                  "value": {
+                    "name": "PT. Mega Indonesia",
+                    "address": "Solo"
+                  }
+                },
+                "WithComponentID": {
+                  "value": {
+                    "name": "PT. Mega Indonesia",
+                    "address": "Solo",
+                    "component_id": [
+                      1,
+                      2,
+                      3
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT_Token": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "success create new supplier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Supplier"
+                    }
+                  }
+                },
+                "example": {
+                  "status": true,
+                  "message": "success create new supplier",
+                  "data": {
+                    "id": 1,
+                    "name": "PT. Mega Indonesia",
+                    "address": "Solo"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "ErrMissingRequestBody": {
+                    "$ref": "#/components/examples/MissingRequestBody"
+                  },
+                  "ErrComponentIdMustArray": {
+                    "$ref": "#/components/examples/ErrComponentIdMustArray"
+                  },
+                  "ErrIdNotFoundInArray": {
+                    "$ref": "#/components/examples/ErrIdNotFoundInArray"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Suppliers"
+        ],
+        "summary": "Delete Supplier",
+        "description": "delete supplier",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "supplier_id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "security": [
+          {
+            "JWT_Token": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success delete supplier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                },
+                "example": {
+                  "status": true,
+                  "message": "success delete component",
+                  "data": null
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "ErrMissingQueryParameter": {
+                    "$ref": "#/components/examples/MissingQuery"
+                  },
+                  "ErrSupplierNotFound": {
+                    "$ref": "#/components/examples/SupplierNotFound"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/suppliers/{id}": {
+      "get": {
+        "tags": [
+          "Suppliers"
+        ],
+        "summary": "Get Detail of Supplier",
+        "description": "get detail of supplier by id",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success get detail of supplier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/SupplierDetail"
+                    }
+                  }
+                },
+                "example": {
+                  "status": true,
+                  "message": "success get detail supplier",
+                  "data": {
+                    "id": 1,
+                    "name": "PT. Mega Indonesia",
+                    "address": "Solo",
+                    "components": [
+                      {
+                        "id": 1,
+                        "name": "ban",
+                        "description": "good quality"
+                      },
+                      {
+                        "id": 9,
+                        "name": "engine",
+                        "description": "good quality"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "ErrMissingParameter": {
+                    "$ref": "#/components/examples/MissingParameter"
+                  },
+                  "ErrSupplierNotFound": {
+                    "$ref": "#/components/examples/SupplierNotFound"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Suppliers"
+        ],
+        "summary": "Modify Supplier Data",
+        "description": "modify supplier data",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "address": {
+                    "type": "string"
+                  }
+                }
+              },
+              "examples": {
+                "NameOnly": {
+                  "value": {
+                    "name": "PT. Mega Indonesia"
+                  }
+                },
+                "AddressOnly": {
+                  "value": {
+                    "address": "Solo"
+                  }
+                },
+                "Both": {
+                  "value": {
+                    "name": "PT. Mega Indonesia",
+                    "address": "Solo"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT_Token": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success update supplier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                },
+                "example": {
+                  "status": true,
+                  "message": "success update supplier",
+                  "data": null
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "ErrMissingParamater": {
+                    "$ref": "#/components/examples/MissingParameter"
+                  },
+                  "ErrMissingRequestBody": {
+                    "$ref": "#/components/examples/MissingRequestBody"
+                  },
+                  "ErrSupplierNotFound": {
+                    "$ref": "#/components/examples/SupplierNotFound"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/products": {
+      "get": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Get All Products",
+        "description": "get all products",
+        "responses": {
+          "200": {
+            "description": "success get all product",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Product"
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "status": true,
+                  "message": "success get all product",
+                  "data": [
+                    {
+                      "id": 1,
+                      "name": "Honda CBR",
+                      "quantity": 100
+                    },
+                    {
+                      "id": 2,
+                      "name": "Honda CRV",
+                      "quantity": 50
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Create New Product",
+        "description": "create new product",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "quantity": {
+                    "type": "integer"
+                  },
+                  "component_id": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "required": [
+                  "name",
+                  "quantity",
+                  "component_id"
+                ]
+              },
+              "example": {
+                "name": "Honda Beat",
+                "quantity": 80,
+                "component_id": [
+                  1,
+                  2,
+                  7
+                ]
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT_Token": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "success create new product",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Product"
+                    }
+                  }
+                },
+                "example": {
+                  "status": true,
+                  "message": "success create new product",
+                  "data": {
+                    "id": 1,
+                    "name": "Honda Beat",
+                    "quantity": 80
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "ErrMissingRequestBody": {
+                    "$ref": "#/components/examples/MissingRequestBody"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Delete Product",
+        "description": "delete product",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "product_id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "security": [
+          {
+            "JWT_Token": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success delete product",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                },
+                "example": {
+                  "status": true,
+                  "message": "success delete product",
+                  "data": null
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "ErrMissingQueryParameter": {
+                    "$ref": "#/components/examples/MissingQuery"
+                  },
+                  "ErrProductNotFound": {
+                    "$ref": "#/components/examples/ProductNotFound"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/products/{id}": {
+      "get": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Get Detail of Product",
+        "description": "get detail of product",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success get detail product",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/ProductDetail"
+                    }
+                  }
+                },
+                "example": {
+                  "status": true,
+                  "message": "success get detail product",
+                  "data": {
+                    "id": 1,
+                    "name": "Honda CBR",
+                    "quantity": 100,
+                    "components": [
+                      {
+                        "id": 1,
+                        "name": "ban",
+                        "description": "good quality"
+                      },
+                      {
+                        "id": 2,
+                        "name": "stang",
+                        "description": "stang motor terbaik"
+                      },
+                      {
+                        "id": 7,
+                        "name": "seat",
+                        "description": "jok terbaik"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "ErrMissingParameter": {
+                    "$ref": "#/components/examples/MissingParameter"
+                  },
+                  "ErrProductNotFound": {
+                    "$ref": "#/components/examples/ProductNotFound"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "update component",
+        "description": "update component",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "minProperties": 1,
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "quantity": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "examples": {
+                "nameOnly": {
+                  "value": {
+                    "name": "Honda Beat"
+                  }
+                },
+                "quantityOnly": {
+                  "value": {
+                    "quantity": 80
+                  }
+                },
+                "both": {
+                  "value": {
+                    "name": "Honda Beat",
+                    "quantity": 80
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT_Token": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success update product",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                },
+                "example": {
+                  "status": true,
+                  "message": "success update product",
+                  "data": null
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "bad requesst",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "ErrMissingParameter": {
+                    "$ref": "#/components/examples/MissingParameter"
+                  },
+                  "ErrMissingBodyRequest": {
+                    "$ref": "#/components/examples/MissingRequestBody"
+                  },
+                  "ErrProductNotFound": {
+                    "$ref": "#/components/examples/ProductNotFound"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/componentSuppliers/add": {
+      "post": {
+        "tags": [
+          "Component_Suppliers"
+        ],
+        "summary": "add suppliers into component",
+        "description": "add suppliers into one or more component",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "supplier_id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ComponentIds"
+              },
+              "example": {
+                "component_id": [
+                  1,
+                  2,
+                  3
+                ]
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT_Token": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "success create records",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                },
+                "example": {
+                  "status": true,
+                  "message": "success create record/records in table component_suppliers",
+                  "data": null
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "ErrMissingBodyRequest": {
+                    "$ref": "#/components/examples/MissingRequestBody"
+                  },
+                  "ErrMissingQuery": {
+                    "$ref": "#/components/examples/MissingQuery"
+                  },
+                  "ErrComponentIdMustArray": {
+                    "$ref": "#/components/examples/ErrComponentIdMustArray"
+                  },
+                  "ErrIdNotFoundInArray": {
+                    "$ref": "#/components/examples/ErrIdNotFoundInArray"
+                  },
+                  "ErrDataAlreadyExist": {
+                    "$ref": "#/components/examples/ErrDataAlreadyExist"
+                  },
+                  "ErrSupplierNotFound": {
+                    "$ref": "#/components/examples/SupplierNotFound"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/componentSuppliers/remove": {
+      "delete": {
+        "tags": [
+          "Component_Suppliers"
+        ],
+        "summary": "remove component in suppliers's component",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "supplier_id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "component_id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "security": [
+          {
+            "JWT_Token": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success remove component in supplier's component",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                },
+                "example": {
+                  "status": true,
+                  "message": "success delete records in table component_supplier",
+                  "data": null
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "ErrMissingQueryParameter": {
+                    "$ref": "#/components/examples/MissingQuery"
+                  },
+                  "ErrComponentNotFound": {
+                    "$ref": "#/components/examples/ComponentNotFound"
+                  },
+                  "ErrSupplierNotFound": {
+                    "$ref": "#/components/examples/SupplierNotFound"
+                  },
+                  "ErrRecordNotFound": {
+                    "value": {
+                      "status": false,
+                      "message": "record not found",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/productComponents/add": {
+      "post": {
+        "tags": [
+          "Product_Components"
+        ],
+        "summary": "add component into product",
+        "description": "add one or more component into product's component",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "product_id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ComponentIds"
+              },
+              "example": {
+                "component_id": [
+                  1,
+                  2,
+                  3
+                ]
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT_Token": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "success create records",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                },
+                "example": {
+                  "status": true,
+                  "message": "success create record/records in table product_components",
+                  "data": null
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "ErrMissingBodyRequest": {
+                    "$ref": "#/components/examples/MissingRequestBody"
+                  },
+                  "ErrQueryParameter": {
+                    "$ref": "#/components/examples/MissingQuery"
+                  },
+                  "ErrComponentIdMustArray": {
+                    "$ref": "#/components/examples/ErrComponentIdMustArray"
+                  },
+                  "ErrIdNotFoundInArray": {
+                    "$ref": "#/components/examples/ErrIdNotFoundInArray"
+                  },
+                  "ErrProductNotFound": {
+                    "$ref": "#/components/examples/ProductNotFound"
+                  },
+                  "ErrDataAlreadyExist": {
+                    "$ref": "#/components/examples/ErrDataAlreadyExist"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/productComponents/remove": {
+      "delete": {
+        "tags": [
+          "Product_Components"
+        ],
+        "summary": "remove component in product's component",
+        "description": "remove component in product's component",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "product_id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "component_id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "security": [
+          {
+            "JWT_Token": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success remove component in table product_components",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                },
+                "example": {
+                  "status": true,
+                  "message": "success deleted record in table product_components",
+                  "data": null
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "ErrMissingQueryParameter": {
+                    "$ref": "#/components/examples/MissingQuery"
+                  },
+                  "ErrProductNotFound": {
+                    "$ref": "#/components/examples/ProductNotFound"
+                  },
+                  "ErrComponentNotFound": {
+                    "$ref": "#/components/examples/ComponentNotFound"
+                  },
+                  "ErrRecordNotFound": {
+                    "value": {
+                      "status": false,
+                      "message": "record not found",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      },
+      "Component": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "ComponentDetail": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "suppliers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "address": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "Supplier": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          }
+        }
+      },
+      "SupplierDetail": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "components": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "Product": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "integer"
+          }
+        }
+      },
+      "ProductDetail": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "integer"
+          },
+          "components": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "ComponentIds": {
+        "type": "object",
+        "properties": {
+          "component_id": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          }
+        },
+        "required": [
+          "component_id"
+        ]
+      }
+    },
+    "examples": {
+      "MissingParameter": {
+        "value": {
+          "status": false,
+          "message": "missing parameter",
+          "data": null
+        }
+      },
+      "MissingQuery": {
+        "value": {
+          "status": false,
+          "message": "missing query paramter",
+          "data": null
+        }
+      },
+      "MissingRequestBody": {
+        "value": {
+          "status": false,
+          "message": "missing body request",
+          "data": null
+        }
+      },
+      "ErrEmailPasswordNotMatched": {
+        "value": {
+          "status": false,
+          "message": "email or password not"
+        }
+      },
+      "IdNotFound": {
+        "value": {
+          "status": false,
+          "message": "ID not found",
+          "data": null
+        }
+      },
+      "Unathorized": {
+        "value": {
+          "status": false,
+          "message": "you are not authorized please login first",
+          "data": null
+        }
+      },
+      "ErrComponentIdMustArray": {
+        "value": {
+          "status": false,
+          "message": "component id must be an array",
+          "data": null
+        }
+      },
+      "ErrIdNotFoundInArray": {
+        "value": {
+          "status": false,
+          "message": "there's id not found",
+          "data": null
+        }
+      },
+      "ErrDataAlreadyExist": {
+        "value": {
+          "status": false,
+          "message": "there is some data already exist",
+          "data": null
+        }
+      },
+      "ComponentNotFound": {
+        "value": {
+          "status": false,
+          "message": "component not found",
+          "data": null
+        }
+      },
+      "Component": {
+        "value": {
+          "id": 1,
+          "name": "ban",
+          "description": "good quality"
+        }
+      },
+      "Supplier": {
+        "value": {
+          "id": 1,
+          "name": "PT. Mega Indonesia",
+          "address": "Solo"
+        }
+      },
+      "SupplierNotFound": {
+        "value": {
+          "status": false,
+          "message": "supplier not found",
+          "data": null
+        }
+      },
+      "Product": {
+        "value": {
+          "id": 1,
+          "name": "Honda Beat",
+          "quantity": 80
+        }
+      },
+      "ProductNotFound": {
+        "value": {
+          "status": false,
+          "message": "product not found",
+          "data": null
+        }
+      }
+    },
+    "responses": {
+      "InternalServerError": {
+        "description": "internal server error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "unauthorized",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "examples": {
+              "Unauthorized": {
+                "$ref": "#/components/examples/Unathorized"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "JWT_Token": {
+        "in": "header",
+        "type": "apiKey",
+        "name": "x-access-token"
+      }
+    }
+  }
+}
