@@ -1,8 +1,9 @@
 const router = require("express").Router()
-const middlewares = require("../middlewares/authJWT")
+const rbac = require("../middlewares/rbac")
+const enums = require("../utils/enums")
 const {component_supplier} = require("../controllers")
 
-router.post("/add", middlewares.auth, component_supplier.create)
-router.delete("/remove", middlewares.auth, component_supplier.delete)
+router.post("/add", rbac(enums.production, true, true), component_supplier.create)
+router.delete("/remove", rbac(enums.production, true, true), component_supplier.delete)
 
 module.exports = router

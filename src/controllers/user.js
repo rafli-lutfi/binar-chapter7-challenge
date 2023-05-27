@@ -1,4 +1,4 @@
-const { User } = require("../db/models");
+const { User, Role } = require("../db/models");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET_KEY } = process.env;
@@ -23,9 +23,11 @@ const register = async (req, res, next) => {
       });
     }
 
+    const roleUser = await Role.findOne({where: {name: "User"}})
+
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    const user = await User.create({ username, email, password: hashedPassword });
+    const user = await User.create({ username, email, password: hashedPassword, user_type: "basic", role_id: roleUser.id });
 
     return res.status(201).json({
       status: true,
@@ -34,6 +36,8 @@ const register = async (req, res, next) => {
         id: user.id,
         username: user.username,
         email: user.email,
+        user_type: user.user_type,
+        role_id: user.role_id
       },
     });
   } catch (err) {
@@ -72,7 +76,9 @@ const login = async (req, res, next) => {
 
     const payload = {
       userId: user.id,
-      username: user.username
+      username: user.username,
+      email: user.email,
+      role_id: user.role_id
     };
 
     const token = jwt.sign(payload, JWT_SECRET_KEY);
