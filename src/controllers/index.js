@@ -7,6 +7,7 @@ const product_component = require("./product_component")
 const role = require("./rbac/role")
 const rbacModule = require("./rbac/module")
 const roleAccess = require("./rbac/roleAccess")
+const media = require("./media")
 
 module.exports = {
   user,
@@ -17,5 +18,6 @@ module.exports = {
   product_component,
   role,
   rbacModule,
-  roleAccess
+  roleAccess,
+  media
 }

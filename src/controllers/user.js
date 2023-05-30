@@ -28,7 +28,14 @@ const register = async (req, res, next) => {
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    const user = await User.create({ username, email, password: hashedPassword, user_type: "basic", role_id: roleUser.id });
+    const user = await User.create({ 
+      username, 
+      email, 
+      password: hashedPassword,
+      avatar: "https://ik.imagekit.io/tiu0i2v9jz/Manufacture_API/default-avatar.png", 
+      user_type: "basic", 
+      role_id: roleUser.id 
+    });
 
     return res.status(201).json({
       status: true,
@@ -84,7 +91,7 @@ const login = async (req, res, next) => {
     }
 
     const payload = {
-      userId: user.id,
+      id: user.id,
       username: user.username,
       email: user.email,
       role_id: user.role_id
@@ -147,8 +154,53 @@ const googleOAuth2 = async (req, res, next) =>{
   }
 }
 
+const updateProfile = async (req, res, next) =>{
+  try {
+    const {username, email} = req.body
+    let {avatar} = req.body
+
+    if(req.uploadFile) {
+      avatar = req.uploadFile.imageUrl
+    }
+
+    if (!username && !email && !avatar) {
+      return res.status(400).json({
+        status: false,
+        message: "missing data in request body",
+        data: null
+      })
+    }
+
+    const {id: userId} = req.user
+
+    const checkUser = await User.findOne({where: {id: userId}})
+    if(!checkUser){
+      return res.status(400).json({
+        status: false,
+        message: "user not found",
+        data: null
+      })
+    }
+
+    await User.update({username, email, avatar}, {where:{id: userId}})
+
+    return res.status(200).json({
+      status: true,
+      message: "success update profile",
+      data: {
+        username,
+        email,
+        avatar
+      }
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
 module.exports = {
   register,
   login,
-  googleOAuth2
+  googleOAuth2,
+  updateProfile
 };
