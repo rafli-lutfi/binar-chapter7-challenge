@@ -8,5 +8,6 @@ router.post("/login", user.login)
 router.get("/googleOAuth", user.googleOAuth2)
 router.post("/updateProfile", jwt.auth, user.updateProfile)
 router.post("/uploadAvatar", jwt.auth, multer().single("media"), media.avatarUpload, user.updateProfile)
+router.get("/auth/verifyAccount", user.verifyAccount)
 
 module.exports = router

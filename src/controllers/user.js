@@ -2,7 +2,8 @@ const { User, Role } = require("../db/models");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET_KEY } = process.env;
-const oauth2 = require("../middlewares/googleOAuth2")
+const oauth2 = require("../utils/googleOAuth2")
+const nodemailer = require("../utils/nodemailer")
 
 const register = async (req, res, next) => {
   try {
@@ -34,12 +35,28 @@ const register = async (req, res, next) => {
       password: hashedPassword,
       avatar: "https://ik.imagekit.io/tiu0i2v9jz/Manufacture_API/default-avatar.png", 
       user_type: "basic", 
-      role_id: roleUser.id 
+      role_id: roleUser.id,
+      verified: false 
     });
+
+    // token for email verificaton 
+    const payload = {
+      username: user.username,
+      email: user.email,
+    };
+
+    const token = jwt.sign(payload, JWT_SECRET_KEY);
+    const url = `${req.protocol}://${req.get("host")}/api/v1/auth/verifyAccount?token=${token}`
+
+    // load template email
+    const html = await nodemailer.getHtml("verifyAccount.ejs", {email, url})
+
+    // send email to user
+    nodemailer.sendMail(user.email, "verify your account", html)
 
     return res.status(201).json({
       status: true,
-      message: "success create new user",
+      message: "success create new user, please check email to verify your account",
       data: {
         id: user.id,
         username: user.username,
@@ -71,6 +88,14 @@ const login = async (req, res, next) => {
         message: "email or password is incorrect",
         data: null,
       });
+    }
+
+    if(!user.verified){
+      return res.status(400).json({
+        status: false,
+        message: "your account is not verified, please check your email to verify",
+        data: null
+      })
     }
 
     if(user.user_type == "google" && !user.password){
@@ -198,9 +223,44 @@ const updateProfile = async (req, res, next) =>{
   }
 }
 
+const verifyAccount = async (req, res, next) => {
+  try {
+    const {token} = req.query
+    if(!token) {
+      return res.status(401).json({
+        status: false,
+        message: "invalid token",
+        data: null,
+      })
+    }
+
+    const data = jwt.verify(token, JWT_SECRET_KEY);
+
+    const {email} = data
+
+    const updated = await User.update({verified: true},{where: {email}})
+    if(updated[0] == 0){
+      return res.status(400).json({
+        status: false,
+        message: "verify account failed",
+        data: null
+      })
+    }
+
+    return res.status(200).json({
+      status: true,
+      message: "verify account success, now you can login with this email",
+      data: null
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
 module.exports = {
   register,
   login,
   googleOAuth2,
-  updateProfile
+  updateProfile,
+  verifyAccount
 };

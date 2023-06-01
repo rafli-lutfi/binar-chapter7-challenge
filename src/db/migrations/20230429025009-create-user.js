@@ -27,6 +27,9 @@ module.exports = {
       role_id: {
         type: Sequelize.INTEGER
       },
+      verified: {
+        type: Sequelize.BOOLEAN
+      }
     });
   },
   async down(queryInterface, Sequelize) {

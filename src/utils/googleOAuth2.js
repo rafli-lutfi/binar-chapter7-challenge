@@ -60,6 +60,7 @@ function getUserData(){
 }
 
 module.exports = {
+  oauth2Client,
   generateAuthURL,
   setCredentials,
   getUserData
