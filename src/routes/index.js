@@ -2,6 +2,9 @@ const router = require("express").Router();
 const swaggerUI = require("swagger-ui-express")
 const swaggerDocument = require("../swagger.json")
 
+const jwt = require("../middlewares/authJWT")
+
+const rbac = require("./rbac")
 const user = require("./user")
 
 const component = require("./component")
@@ -16,11 +19,13 @@ router.get("/docs", swaggerUI.setup(swaggerDocument))
 
 router.use(user)
 
-router.use("/components", component)
-router.use("/suppliers", supplier)
-router.use("/componentSuppliers", componentSupplier)
+router.use(jwt.auth, rbac)
 
-router.use("/products", product)
-router.use("/productComponents", product_component)
+router.use("/components", jwt.auth, component)
+router.use("/suppliers", jwt.auth, supplier)
+router.use("/componentSuppliers", jwt.auth, componentSupplier)
+
+router.use("/products", jwt.auth, product)
+router.use("/productComponents", jwt.auth, product_component)
 
 module.exports = router

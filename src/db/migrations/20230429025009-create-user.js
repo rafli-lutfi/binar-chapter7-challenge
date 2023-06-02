@@ -17,6 +17,18 @@ module.exports = {
       },
       password: {
         type: Sequelize.STRING
+      },
+      avatar: {
+        type: Sequelize.STRING
+      },
+      user_type: {
+        type: Sequelize.STRING
+      },
+      role_id: {
+        type: Sequelize.INTEGER
+      },
+      verified: {
+        type: Sequelize.BOOLEAN
       }
     });
   },

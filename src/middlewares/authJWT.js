@@ -15,7 +15,9 @@ const authenticateToken = async (req, res, next) => {
     const data = jwt.verify(token, JWT_SECRET_KEY);
     req.user = {
       id: data.id,
-      username: data.username
+      username: data.username,
+      email: data.email,
+      role_id: data.role_id
     };
 
     next();
