@@ -61,6 +61,9 @@ jobs:
           DB_USERNAME: postgres
           DB_PASSWORD: postgres
           JWT_SECRET_KEY: 123testing123
+          IMAGEKIT_PUBLIC_KEY: ${{secrets.IMAGEKIT_PUBLIC_KEY}}
+          IMAGEKIT_PRIVATE_KEY: ${{secrets.IMAGEKIT_PRIVATE_KEY}}
+          IMAGEKIT_URL_ENDPOINT: ${{secrets.IMAGEKIT_URL_ENDPOINT}}
 
   cd:
     runs-on: ubuntu-latest
