@@ -5,70 +5,8 @@ on:
     branches: [develop]
 
 jobs:
-  ci:
-    runs-on: ubuntu-latest
-    
-    services:
-
-      postgres:
-        image: postgres:13.2
-        env:
-          POSTGRES_PASSWORD : postgres
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Use Node 18
-        uses: actions/setup-node@v1
-        with:
-          node-version: 18.12.0
-
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Install Sequelize CLI
-        run: npm i sequelize-cli
-
-      - name: Create Database
-        run: npx sequelize db:create
-        env:
-          DB_HOST: localhost
-          DB_NAME: ci-cd
-          DB_USERNAME: postgres
-          DB_PASSWORD: postgres
-
-      - name: Migrate database
-        run: npx sequelize db:migrate
-        env:
-          DB_HOST: localhost
-          DB_NAME: ci-cd
-          DB_USERNAME: postgres
-          DB_PASSWORD: postgres
-
-      - name: Run Test
-        run: npm test
-        env:
-          DB_HOST: localhost
-          DB_NAME: ci-cd
-          DB_USERNAME: postgres
-          DB_PASSWORD: postgres
-          JWT_SECRET_KEY: 123testing123
-          IMAGEKIT_PUBLIC_KEY: ${{secrets.IMAGEKIT_PUBLIC_KEY}}
-          IMAGEKIT_PRIVATE_KEY: ${{secrets.IMAGEKIT_PRIVATE_KEY}}
-          IMAGEKIT_URL_ENDPOINT: ${{secrets.IMAGEKIT_URL_ENDPOINT}}
-
   cd:
     runs-on: ubuntu-latest
-
-    needs: ci
 
     steps:
       - name: Checkout
