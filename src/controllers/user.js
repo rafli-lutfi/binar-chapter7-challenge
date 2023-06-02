@@ -90,18 +90,18 @@ const login = async (req, res, next) => {
       });
     }
 
-    if(!user.verified){
-      return res.status(400).json({
-        status: false,
-        message: "your account is not verified, please check your email to verify",
-        data: null
-      })
-    }
-
     if(user.user_type == "google" && !user.password){
       return res.status(400).json({
         status: false,
         message: "your account was registered using google, please login with googleOAuth",
+        data: null
+      })
+    }
+
+    if(!user.verified){
+      return res.status(400).json({
+        status: false,
+        message: "your account is not verified, please check your email to verify",
         data: null
       })
     }
@@ -156,7 +156,9 @@ const googleOAuth2 = async (req, res, next) =>{
         username: data.name,
         email: data.email,
         user_type: "google",
-        role_id: roleUser.id
+        avatar: "https://ik.imagekit.io/tiu0i2v9jz/Manufacture_API/default-avatar.png",
+        role_id: roleUser.id,
+        verified: true
       })
     }
 
